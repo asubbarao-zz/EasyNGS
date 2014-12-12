@@ -109,6 +109,8 @@ for i_or_d in indel_type:
 End of edit from ngs_summary_jeff by A.Subbarao 12/2/2014
 """
 
+#####deletions just returns the length of indel_type (doesn't seem to differentiate between I or D). I think indexing of loop is incorrect        
+
 
     
  
@@ -154,6 +156,11 @@ for nucleotide in bases:
             substitutioncount += 1
 print "substitutioncount = ",substitutioncount
 print "snpcount = ",snpcount
+
+#####Looking at rbase we should see much larger numbers (all of them seem to be in bases), additionally we should expect count of nucleotides to be the same length as bases (that is: have a count per base)#
+#####snpcount will only be 1 if countofnecleotides is >= 1 and 0 otherwise (takes on no other values) (not sure if this in intentional)
+
+
              
 #Extract the mapped reads present in the design file and the sequencing output file(reads)
 mapped_reads = []        
@@ -162,6 +169,8 @@ for seq in refseq:
         if seq == read:
             mapped_reads.append(read)
 print mapped_reads
+
+#####Mapped_reads is missing some matches. I can't make sense of it logically, however when implementing my own version I found additional matches (which I verified)
 
 #Compute the coverage of each sequence
 haploidgenome_length = float(3*(10**9))##in basepairs;for human genome
