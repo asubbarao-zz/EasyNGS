@@ -1,0 +1,131 @@
+import ngs_summary_v2_1 as ngs
+from collections import defaultdict
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import itertools as it
+
+"""
+Modification history:
+    Author: Alok Subbarao
+Date: 12/13/14, 12/14/14
+"""
+
+
+
+mapped_reads = []
+
+mapkeys = ngs.ID
+mapvals = ngs.refseq
+
+temp_dictionary=dict(zip(mapkeys,mapvals)) #create a dictionary of 
+#barcode as keys, sequences as values
+
+design_dictionary = dict(zip(temp_dictionary.values(), temp_dictionary.keys()))
+#new dictionary which swaps the keys and the values
+"""
+This is unnecessary, replaced by the above
+but I want to save it for posterity in case I 
+ever need to enumerate something like this again
+
+design_reads = list(enumerate(ngs.refseq,1)) #create a list of reads 
+#from the design file containing a sequence and the row of that sequence
+
+new_design_reads = list((ngs.refseq,ngs.ID))
+
+temp_dictionary = dict(design_reads) #this has key as row number and 
+#value as the sequence; we want the opposite
+
+design_dictionary = dict(zip(temp_dictionary.values(), temp_dictionary.keys())) #creates
+# a new dictionary which swaps the keys and values from the temp
+"""
+
+##mapreads editted by jeff, 12/14 5pm##
+
+def mapreads(x):
+    mapped_reads = []
+    for sequence in x:
+        if sequence in design_dictionary:
+            match = design_dictionary.get(sequence), sequence
+            mapped_reads.append(match)
+    return mapped_reads
+#to get the actual values necessary: either use
+# zip(*mapped_reads)
+#or can also do 
+#[i[0] for i in mapped_reads] or [position for position, seq in mappedreads]
+# see mapID and mapSeq below
+
+###above function only returns the distinct matches, doesn't include anyway to show how many times they occur##
+
+
+depthvalues = []
+for i in list(ngs.depth):
+    a=int(i)
+    depthvalues.append(a)
+#turn the list of strings 'ngs.depth' into a list of integers for histogram
+#the 'ngs.depth' should actually be 1million + rows, the length of the 
+#full mpileup file
+    
+ 
+
+
+
+##chunking (get_sam_match) rebuilt by jeff, 12/14 5pm##
+def get_sam_match(fname):
+    sam_match = []
+    raw = pd.read_csv(fname, chunksize = 25000, low_memory=False, sep = ",")
+    #wholefile= pd.concat((raw),ignore_index=True)
+    for chunk in raw:
+        som = chunk.ix[:,9]
+        
+        sam_match.append(mapreads(som))
+
+    return sam_match
+
+
+dat = get_sam_match('EasyNGS_Sam.csv')
+
+
+mapID = [ID for ID, seq in mapped_reads]
+mapSeq = [seq for ID, seq in mapped_reads]
+bins = defaultdict(int)
+
+
+##Depth_count & Plot deisgned by jeff: 12/14 7pm##
+def get_depth_count(fname):
+    #count = []
+    #dp = []
+    raw = pd.read_csv(fname, chunksize = 2500, low_memory = False, sep = ",")
+    for chunk in raw:
+        depth = list(chunk.ix[:,3])
+        vals = set(depth)
+        for i in depth:
+            bins[i] += 1
+            
+        """    
+        for i in vals:
+            count.append(depth.count(i))
+            dp.append(i)
+            """
+    return #dp,count, depth, vals
+    
+    
+    
+
+
+trial = get_depth_count('EasyNGS_Mpileup.csv');
+
+x= pd.DataFrame(trial[0],trial[1])
+gb = x.groupby([0])
+fincount = []
+findp = []
+for j in set(trial[0]):
+    y = gb.get_group(j)
+    fincount.append(sum(y.index))
+    findp.append(j)
+
+
+plt.bar(bins.keys(),bins.values())
+plt.show()
+
+
