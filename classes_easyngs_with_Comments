@@ -1,5 +1,5 @@
 #NAME OF THE FILE: EasyNGS_Input_Module_v2.py
-#BY: Kiranmayee Dhavala, Alok Subbarao, Renu Krishnan, Harjot Hans
+#BY: Kiranmayee Dhavala, Alok Subbarao, Renu Jayakrishnan, Harjot Hans
 #DATE SUBMITTED: 12/17/2014
 #Python Version(s): 2.7.4
 
@@ -12,6 +12,12 @@ This module contains classes to create an instance for each of the three input f
                 and places them in a DataFrame and converts it to a list
     mpile_up:  this class contains a method "populate_mpile_up" that creates an instance of each of the required columns in that file
                 and places them in a DataFrame and converts it to a list
+Base APIs for each class include:
+- content store, 
+- set and get, 
+- iterator, 
+- next 
+- string.
 """
 import pandas as pd
 import numpy as np
@@ -19,6 +25,7 @@ import numpy as np
 """
 Class design_np contains attributes like different 
 """    
+    
 class design_np:
     def __init__(self):
         self.refseq = None
@@ -39,6 +46,7 @@ class design_np:
         self.Feature_number = df_design['number'].tolist()
         self.Mapping_quality_designs = df_design['Mapping_Quality'].tolist()
         self.Chromosome_Coordinates_designs = df_design['MappingProbeName'].tolist()
+        self.num_elements = len(self.ID)
         
     def __iter__ (self):
         self.iter_count = 0
@@ -47,29 +55,39 @@ class design_np:
     def __next__ (self):
         if self.iter_count < self.num_elements:
             result = None
-            result.append(self.refseq(self.iter_count))
-            result.append(self.ID(self.iter_count))
-            result.append(self.Name(self.iter_count))
-            result.append(self.Row(self.iter_count))
-            result.append(self.Column(self.iter_count))
-            result.append(self.Feature_number(self.iter_count))
-            result.append(self.Mapping_quality_designs(self.iter_count))
-            result.append(self.Chromosome_Coordinates_designs(self.iter_count))
+            result.append(self.refseq[self.iter_count])
+            result.append(self.ID[self.iter_count])
+            result.append(self.Name[self.iter_count])
+            result.append(self.Row[self.iter_count])
+            result.append(self.Column[self.iter_count])
+            result.append(self.Feature_number[self.iter_count])
+            result.append(self.Mapping_quality_designs[self.iter_count])
+            result.append(self.Chromosome_Coordinates_designs[self.iter_count])
             self.iter_count += 1
             return result
             
     def __getitem__(self,i):
         new_list_design = []
-        new_list_design.append(self.refseq(i))
-        new_list_design.append(self.ID(i))
-        new_list_design.append(self.Name(i))
-        new_list_design.append(self.Row(i))
-        new_list_design.append(self.Column(i))
-        new_list_design.append(self.Feature_number(i))
-        new_list_design.append(self.Mapping_quality_designs(i))
-        new_list_design.append(self.Chromosome_Coordinates_designs(i))
+        new_list_design.append(self.refseq[i])
+        new_list_design.append(self.ID[i])
+        new_list_design.append(self.Name[i])
+        new_list_design.append(self.Row[i])
+        new_list_design.append(self.Column[i])
+        new_list_design.append(self.Feature_number[i])
+        new_list_design.append(self.Mapping_quality_designs[i])
+        new_list_design.append(self.Chromosome_Coordinates_designs[i])
         return new_list_design
-
+   
+    ## __str__ is used to return instance-specific data string, however as the data is large, string buffer may not hold all the info.  
+    ## To demonstrate usage of __str__, better to print to stdout.  
+    def __str__(self):
+        print "  ID    refseq   Name   Row    Column     Feature-number  Mapping-quality     Chromosome-coordinate-designs"
+        print "------------------------------------------------------------------------------------------------------------"
+        for i in range(self.num_elements):
+            print "  {:d}  {:s}  {:s}  {:d}  {:d}  {:d}  {:d}  {:s} ".format(self.ID[i], self.refseq[i], self.Name[i], 
+                    self.Row[i], self.Column[i], self.Feature_number[i], self.Mapping_quality_designs[i], self.Chromosome_Coordinates_designs[i])
+        return ''
+        
 class sam_np:
     def __init__(self):
         self.chromosome = None
@@ -98,12 +116,12 @@ class sam_np:
     
     def __next__ (self):
         if self.iter_count < self.num_elements:
-            result = None
-            result.append(self.chromosome(self.iter_count))
-            result.append(self.position(self.iter_count))
-            result.append(self.red_seq(self.iter_count))
-            result.append(self.chromosome_coordinates(self.iter_count))
-            result.append(self.CIGAR(self.iter_count))
+            result = []
+            result.append(self.chromosome[self.iter_count])
+            result.append(self.position[self.iter_count])
+            result.append(self.read_seq[self.iter_count])
+            result.append(self.chromosome_coordinates[self.iter_count])
+            result.append(self.CIGAR[self.iter_count])
             self.iter_count += 1
             return result
         else:
@@ -111,12 +129,23 @@ class sam_np:
     
     def __getitem__(self,index):
         new_list_sam = []
-        new_list_sam.append(self.chromosome(index))
-        new_list_sam.append(self.position(index))
-        new_list_sam.append(self.red_seq(index))
-        new_list_sam.append(self.chromosome_coordinates(index))
-        new_list_sam.append(self.CIGAR(index))
+        new_list_sam.append(self.chromosome[index])
+        new_list_sam.append(self.position[index])
+        new_list_sam.append(self.read_seq[index])
+        new_list_sam.append(self.chromosome_coordinates[index])
+        new_list_sam.append(self.CIGAR[index])
         return new_list_sam
+    
+    ## __str__ is used to return instance-specific data string, however as the data is large, string buffer may not hold all the info.  
+    ## To demonstrate usage of __str__, better to print to stdout.  
+    def __str__(self):
+        print "  Read-sequence   Position    Chromosome    Chromosome-coordinates    CIGAR"
+        print "----------------------------------------------------------------------------"
+        for index in range(self.num_elements):
+            print "  {:s}  {:d}  {:s}  {:d}  {:s} ".format(self.read_seq[index], self.position[index], self.chromosome[index], 
+                self.chromosome_coordinates[index], self.CIGAR[index])
+        print "Indelinfo: Total insertions: {:d}, Total deletions: {:d}".format(self.num_insertions, self.num_deletions)
+        return ''
 
 class mpile_up:
     def __init__(self):
@@ -136,16 +165,25 @@ class mpile_up:
         
     def __next__ (self):
         if self.iter_count < self.num_elements:
-            result = None
-            result.append(self.rbase(self.iter_count))
-            result.append(self.symbols(self.iter_count))
-            result.append(self.depth(self.iter_count))
+            result = []
+            result.append(self.rbase[self.iter_count])
+            result.append(self.symbols[self.iter_count])
+            result.append(self.depth[self.iter_count])
             self.iter_count += 1
             return result
             
     def __getitem__(self,i):
         new_list_mpile_up = []
-        new_list_mpile_up.append(self.rbase(i))
-        new_list_mpile_up.append(self.symbols(i))
-        new_list_mpile_up.append(self.depth(i))
+        new_list_mpile_up.append(self.rbase[i])
+        new_list_mpile_up.append(self.symbols[i])
+        new_list_mpile_up.append(self.depth[i])
         return new_list_mpile_up 
+    
+    ## __str__ is used to return instance-specific data string, however as the data is large, string buffer may not hold all the info.  
+    ## To demonstrate usage of __str__, better to print to stdout.  
+    def __str__(self):
+        print "  RBASE    Symbols      Depth"
+        print "-----------------------------"
+        for i in range(self.num_elements):
+            print "  {:s}  {:s}  {:d} ".format(self.rbase[i], self.symbols[i], self.depth[i])
+        return ''
