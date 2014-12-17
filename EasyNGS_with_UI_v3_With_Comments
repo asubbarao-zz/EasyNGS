@@ -1,0 +1,180 @@
+#NAME OF THE FILE: EasyNGS_with_UI_v3.py
+#BY: Kiranmayee Dhavala, Alok Subbarao, Renu Krishnan, Harjot Hans
+#DATE SUBMITTED: 12/17/2014
+#Python Version(s): 2.7.4
+ 
+
+
+"""This module, when run, gives a widget which can be used as a GUI. It consists
+of Class with attributes and Methods which perform important
+functions that open, read and store required data from the file uploaded through
+GUI. It requires the following modules:wxPython, Numpy, Pandas.
+"""
+
+import wx
+import numpy as np
+import pandas as pands        
+import classes_easyngs as cl
+
+
+ID_DESIGN     = 1  # 
+ID_SAM        = 2
+ID_MPILEUP    = 3
+
+""" 
+The initialization of class "ListBox" would display the a User Interface that 
+contains three radio buttons, which upon left-click, would prompt the user to
+enter the filenames that exist in the folder in which this script is placed.
+This class is based on inheritance that uses "FRame" in another module wx that is imported at the beginning of the program. 
+The contains several instance objects which result in the creation of frames, 
+buttons, status bars, etc. 
+This is followed by method functions for details to be displayed on the widgets. 
+The three main methods, OnButtonDesign, OnButtonSam, OnButtonMpileup 
+are used to open three unique data files 
+and extract and store the desired elements.
+"""
+    
+
+class ListBox(wx.Frame):
+    """Creates a UI that takes in filenames of three input files and displays the status on each of them
+        Input files: 1. Design File name, 2. SAM File, 3. Mpileup file
+        All files need to be in .csv format and must be in the same folder as this script"""
+    
+
+    def __init__(self, parent, id, title):#initializes the method wxFrame
+        wx.Frame.__init__(self, parent, id, title, size=(500, 450))
+
+        panel = wx.Panel(self, -1)
+        hbox = wx.BoxSizer(wx.HORIZONTAL)
+
+        self.listbox = wx.ListBox(panel, -1)
+        hbox.Add(self.listbox, 1, wx.EXPAND | wx.ALL, 20)
+
+        btnPanel = wx.Panel(panel, -1)
+        vbox = wx.BoxSizer(wx.VERTICAL)
+        bDesign = wx.Button(btnPanel, ID_DESIGN, 'Design File', size=(90, 30))
+        bSam = wx.Button(btnPanel, ID_SAM, 'SAM File', size=(90, 30))
+        bMpileup = wx.Button(btnPanel, ID_MPILEUP, 'Mpileup File', size=(90, 30))
+        
+        """
+        Binds the method functions defined later in the program to the buttons generated here
+        """
+        self.Bind(wx.EVT_BUTTON, self.OnButtonDesign, id=ID_DESIGN)
+        self.Bind(wx.EVT_BUTTON, self.OnButtonSam, id=ID_SAM)
+        self.Bind(wx.EVT_BUTTON, self.OnButtonMpileup, id=ID_MPILEUP)
+        
+        #Generated a vertical box
+        vbox.Add((-1, 50))
+        vbox.Add(bDesign)
+        vbox.Add(bSam, 0, wx.TOP, 5)
+        vbox.Add(bMpileup, 0, wx.TOP, 5)
+        
+
+        btnPanel.SetSizer(vbox)
+        hbox.Add(btnPanel, 0.6, wx.EXPAND | wx.RIGHT, 20)
+        panel.SetSizer(hbox)
+
+        self.Centre()
+        self.Show(True)#Sets the Show() atrribute to true when the script is run
+        
+        self.statusbar = self.CreateStatusBar()#Creates a status bar on the UI frame
+        self.statusbar.SetStatusText("Welcome")#Sets it to "Welcome"
+        
+        self.design = cl.design_np()
+        self.sam = cl.sam_np()
+        self.mpileup = cl.mpile_up()
+                   
+    def DialogBox(self):#Creates a dialog box that is used later on in a method function to display a message box
+        wx.FutureCall(5000, self.ShowMessage)
+
+        self.SetSize((300, 200))
+        self.SetTitle('Message box')
+        self.Centre()
+        self.Show(True)
+
+    def ShowMessage(self, message, title):#displays a message box
+        self.message = message
+        self.title = title
+        wx.MessageBox(self.message,self.title, wx.OK | wx.ICON_INFORMATION)
+
+
+    def OpenFileCsv(self, fname):
+        """
+        Opens a csv file each time its called.
+        If the file exists in the working directory, it opens it, reads in the file and return the value for use later on and the status bar displays "Completed Reading File"
+        If the file does not exist, a message box displays an error message "File does not exist" and sets the status bar to "Processing"
+        """
+        try: 
+            csvdata = pands.read_csv(fname, sep = ",")
+            self.statusbar.SetStatusText("Completed Reading File")
+            return csvdata
+        except IOError:
+            err_msg = "File %s does not exist"%fname
+            self.ShowMessage(err_msg, "Error")
+            return pands.Dataframe()
+            
+            
+    def LoadArray(self,csvdata):
+            """
+          Loads the csv file opened and returned by the above function into an array
+          """          
+            self.statusbar.SetStatusText("Reading File")
+            arraydata = np.asarray(csvdata.values, dtype = 'a1000')
+            self.statusbar.SetStatusText("Completed Reading File")
+            return arraydata    
+        
+    #On pressing Design File Button    
+    def OnButtonDesign(self, event):
+        """
+        Takes in the Design file name from the user when its Left-Clicked.
+        Checks if the filename entered is not empty, opens it, loads into an array
+        and uses a method function "design.populate_design_np" from the module "classes_easyngs"
+        Once done, displays a message box "Done!!""
+        """
+        filename_csv = wx.GetTextFromUser('Enter Design File', 'Design File')
+        self.statusbar.SetStatusText("Processing")
+        if filename_csv != '':
+            self.listbox.Append("Design File:" + filename_csv)
+            retData      = self.OpenFileCsv(filename_csv)
+            if retData.empty:
+                return None
+            self.design.populate_design_np(retData)
+            self.ShowMessage("Done!!", "Success")
+              
+                
+    #On pressing SAM button
+    def OnButtonSam(self, event):
+        """
+        Takes in the SAM file name from the user when its Left-Clicked.
+        Checks if the filename entered is not empty, opens it, loads into an array
+        and uses a method function "sam.populate_sam_np" from the module "classes_easyngs"
+        Once done, displays a message box "Done!!""
+        """
+        filename_csv = wx.GetTextFromUser('Enter SAM File', 'SAM File')
+        self.statusbar.SetStatusText("Processing")
+        if filename_csv != '':
+            self.listbox.Append("Sam File:" + filename_csv)
+            retData      = self.OpenFileCsv(filename_csv)
+            if retData.empty:
+                return None
+            self.sam.populate_sam_np(retData)
+            self.ShowMessage("Done!!", "Success")
+        
+                    
+    #On Pressing Mpileup Button       
+    def OnButtonMpileup(self, event):
+        """
+        Takes in the Mpileup file name from the user when its Left-Clicked.
+        Checks if the filename entered is not empty, opens it, loads into an array
+        and uses a method function "mpileup.populate_mpile_up" from the module "classes_easyngs"
+        Once done, displays a message box "Done!!""
+        """
+        filename_csv = wx.GetTextFromUser('Enter Mpileup File', 'Mpileup File')
+        self.statusbar.SetStatusText("Processing")
+        if filename_csv != '':
+            self.listbox.Append("MPileup File:" + filename_csv)
+            retData      = self.OpenFileCsv(filename_csv)
+            if retData.empty:
+                return None
+            self.mpileup.populate_mpile_up(retData) 
+            self.ShowMessage("Done!!", "Success")
