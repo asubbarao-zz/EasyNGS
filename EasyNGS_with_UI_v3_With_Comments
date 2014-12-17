@@ -14,7 +14,7 @@ GUI. It requires the following modules:wxPython, Numpy, Pandas.
 import wx
 import numpy as np
 import pandas as pands        
-import classes_easyngs as cl
+import classes_easyngs_with_Comments as cl
 
 
 ID_DESIGN     = 1  # 
@@ -111,7 +111,7 @@ class ListBox(wx.Frame):
         except IOError:
             err_msg = "File %s does not exist"%fname
             self.ShowMessage(err_msg, "Error")
-            return pands.Dataframe()
+            return pands.DataFrame()
             
             
     def LoadArray(self,csvdata):
