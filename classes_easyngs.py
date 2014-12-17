@@ -108,7 +108,7 @@ class mpile_up:
         self.depth = None
         
     def populate_mpile_up(self, df_mpileup):
-        self.rbase = df_mpileup['RBASE(reference base)'].tolist()
+        self.rbase = df_mpileup['RBASE'].tolist()
         self.symbols = df_mpileup['READ_BASES'].tolist()
         self.depth = df_mpileup['DEPTH'].tolist()
         self.num_elements = len(self.symbols)
