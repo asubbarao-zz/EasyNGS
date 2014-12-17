@@ -2,7 +2,7 @@
 import re
 import pandas as pd
 import wx     
-import EasyNGS_with_UI_v3 as engs   
+import EasyNGS_with_UI_v3_With_Comments as engs   
 
 
 app = wx.App()
@@ -39,9 +39,9 @@ for each in CIGAR[index]:
     
     
 """
-indels = re.compile('\d+[ID]')
+indels = 0
 
-def hasindel(element):
+def hasindel(element, regex=re.compile('\d+[ID]')):
     """
     Description: searches a string for any digit followed by "I" or "D" to 
     determine whether the string contains indels or deletions
@@ -52,7 +52,9 @@ def hasindel(element):
     
     Return: True if an indel is present, otherwise false
      """
-    if indels.search(element): #this will return true if it is found otherwise none
+    global indels
+    indels = regex 
+    if regex.search(element): #this will return true if it is found otherwise none
          return True
     else:
          return False
@@ -80,7 +82,6 @@ for q in range(len(indel_loc)):
 insertions = 0
 deletions = 0
 for i_or_d in indel_type:
-    print i_or_d
     if i_or_d[1] == "I":
         insertions += int(i_or_d[0])
     elif i_or_d[1] == "D":
@@ -106,7 +107,7 @@ for indels in mpileup.symbols:
         indelcount += 1
     elif "+" in mpileup.symbols:
         indelcount += 1
-print "indelcount = ",indelcount
+print "Count of Insertions/Deletions = ",indelcount
 
 #Calculate SNPs for the file
 countofnucleotides = 0
@@ -130,32 +131,19 @@ for nucleotide in mpileup.rbase:
     elif nucleotide.lower() == 'g':
         gcount +=1
 
-print "substitutioncount = ",substitutioncount
-print "snpcount = ",snpcount
+print "Substitution count: "
+print "'a' count = {:d}, 'c' count {:d}, 't' count {:d}, 'g' count {:d}".format(acount, ccount, tcount, gcount)
 
 #####Looking at rbase we should see much larger numbers (all of them seem to be in bases), additionally we should expect count of nucleotides to be the same length as bases (that is: have a count per base)#
 #####snpcount will only be 1 if countofnecleotides is >= 1 and 0 otherwise (takes on no other values) (not sure if this in intentional)
 
-
              
-#Extract the mapped reads present in the design file and the sequencing output file(reads)
-# If the entire design file containing 247K rows is read then, the operation below yields
-# 3.5 Billion iterations, which will take a good chunk of time.  Reducing read_seq to 1000 rows
-mapped_reads = []     
-mapped_reads = [s for s in design.refseq if any(xs in s for xs in sam.read_seq[1:1000])]   
-#for seq in design.refseq:
-#    for read in sam.read_seq:
-#        if seq == read:
-#            mapped_reads.append(read)
-print mapped_reads
-
 #####Mapped_reads is missing some matches. I can't make sense of it logically, however when implementing my own version I found additional matches (which I verified)
 
 #Compute the coverage of each sequence
 haploidgenome_length = float(3*(10**9))##in basepairs;for human genome
 read_length = 65
 index = 0
-## This seems incorrect, size of read_seq and depth are not the same.
 #for each in sam.read_seq:
 #    print "depth per base = ",mpileup.depth[index]
 #    index += 1
@@ -168,16 +156,9 @@ Written By Alok Subbarao
 Description: Transposes the output, previously each row was output as
 a column
 """
-data = [[design.ID, design.Name, design.refseq, design.Chromosome_Coordinates_designs, design.Mapping_quality_designs, sam.read_seq, sam.chromosome_coordinates ,design.Row, design.Column, design.Feature_number, indelcount, snpcount, substitutioncount, mpileup.depth]]
+data = [[design.ID, design.Name, design.refseq, design.Chromosome_Coordinates_designs, design.Mapping_quality_designs, sam.read_seq, sam.chromosome_coordinates ,design.Row, design.Column, design.Feature_number, mpileup.depth]]
 
 out = pd.DataFrame(data[0][0:10])
 fin = out.transpose()
 
-fin.to_csv('sample_data.csv') ##instead of outputting the data I would use a key to how the data was subsetted
-##for example d48685-92434s... (design rows 48685:92434, sam rows ...)
-
-nxt = pd.DataFrame(data[0][10:13])
-nxt.to_csv('count_for_sample.csv') ##I would include the key id in this output for logical data independence and clean comparisons later on
-
-lst = pd.DataFrame(data[0][13])
-lst.to_csv('depths_for_sample.csv') ##Again, key idre
+fin.to_csv('output_data.csv') ##instead of outputting the data I would use a key to how the data was subsetted
