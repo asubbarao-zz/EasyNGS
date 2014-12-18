@@ -7,7 +7,8 @@
 gene sequence using an important function, 'hasindel'. Once identified, it calculates
 the number of Insertions and deletions, substitutions and writes the desired output
 to a csv file. The doctest module checks if the critical function, 'hasindel', works
-as expected.
+as expected. The modules required are re, pandas, wx, EasyNGS_with_UI_v3_With_Comments 
+and sys.
 
 Author: Alok Subbarao
 MODIFICATION HISTORY: 12/2/2014
@@ -20,8 +21,9 @@ to calculate insertions and deletions.
 import re
 import pandas as pd
 import wx     
-import EasyNGS_with_UI_v3_With_Comments as engs   
-
+import EasyNGS_with_UI_v3_With_Comments as engs
+reload(engs)   
+import sys
 
 app = wx.App()
 lb = engs.ListBox(None, -1, 'EasyNGS')
@@ -29,7 +31,18 @@ design = lb.design
 sam = lb.sam
 mpileup = lb.mpileup
 app.MainLoop()
-        
+
+## If unsuitable file name is given, the code will not proceed further. It will
+## display error message and exit. 
+if design.num_elements == 0 :
+    print 'Insufficient data'
+    sys.exit(1)
+elif sam.num_elements == 0:
+    print 'In sufficient data'
+    sys.exit(1)
+elif mpileup.num_elements == 0:
+    print 'Insufficient data'
+    sys.exit(1)
 """
 Modifcation history:
     Date: 12/13/14
