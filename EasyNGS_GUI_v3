@@ -18,7 +18,7 @@ import pandas as pands
 import EasyNGS_input_module as cl
 
 
-ID_DESIGN     = 1  # 
+ID_DESIGN     = 1  
 ID_SAM        = 2
 ID_MPILEUP    = 3
 
@@ -134,7 +134,7 @@ class ListBox(wx.Frame):
             
             
     def LoadArray(self,csvdata):
-            """
+          """
           Loads the csv file opened and returned by the above function into an array
           """          
             self.statusbar.SetStatusText("Reading File")
