@@ -1,6 +1,6 @@
 README
 
-Please view as "raw" in github or save to .txt for proper formatting
+Please view as "raw" in github or save as .txt for proper formatting
 
 This is the README of the EasyNGS Project. This project provides a GUI and scripts which analyze NGS data files. The
 program requires a design file, MPileup file, and SAM file.
