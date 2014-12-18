@@ -1,4 +1,13 @@
-import ngs_summary_v2_2 as ngs
+#NAME OF THE FILE: EasyNGS_with_UI_v3.py
+#BY: Kiranmayee Dhavala, Alok Subbarao, Renu Jayakrishnan, Harjot Hans
+#DATE SUBMITTED: 12/17/2014
+#Python Version(s): 2.7.4
+
+
+
+
+
+import EasyNGS_output_module_v2_3 as ngs
 from collections import defaultdict
 import pandas as pd
 import numpy as np
@@ -20,10 +29,9 @@ mapkeys = ngs.design.ID
 mapvals = ngs.design.refseq
 
 temp_dictionary=dict(zip(mapkeys,mapvals)) #create a dictionary of 
-#barcode as keys, sequences as values
+                                           #barcode as keys, sequences as values
 
-design_dictionary = dict(zip(temp_dictionary.values(), temp_dictionary.keys()))
-#new dictionary which swaps the keys and the values
+design_dictionary = dict(zip(temp_dictionary.values(), temp_dictionary.keys()))#new dictionary which swaps the keys and the values
 
 
 ##mapreads editted by jeff, 12/14 5pm##
