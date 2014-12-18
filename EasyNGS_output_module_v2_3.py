@@ -24,7 +24,7 @@ import wx
 import EasyNGS_GUI_v3 as engs
 reload(engs)   
 import sys
-import EasyNGS_results_module_v2.1 as res
+import EasyNGS_results_module_v2_1 as res
 
 app = wx.App()
 lb = engs.ListBox(None, -1, 'EasyNGS')
@@ -131,6 +131,6 @@ fin = out.transpose()
 
 fin.to_csv('output_data.csv') #writes the data given above to "output_data" in csv format in the working directory
 
-if __name__ == "__main__": #If the file is run as stand_alone then the auto testing module doctest will be initialized
+if __name__ == "__main__":
     import doctest
     doctest.testmod()
