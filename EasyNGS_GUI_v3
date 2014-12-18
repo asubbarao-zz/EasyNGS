@@ -15,7 +15,7 @@ GUI. It requires the following modules:wxPython, Numpy, Pandas.
 import wx
 import numpy as np
 import pandas as pands        
-import classes_easyngs as cl
+import EasyNGS_input_module as cl
 
 
 ID_DESIGN     = 1  # 
