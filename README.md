@@ -6,8 +6,11 @@ This is the README of the EasyNGS Project. This project provides a GUI and scrip
 program requires a design file, MPileup file, and SAM file.
 Modules in this program include:
   -EasyNGS_with_UI.py
+  
   -EasyNGS_input_module.py
+  
   -EasyNGS_output_module.py
+  
   -EasyNGS_results.py
   
 Required files to run this program include:
