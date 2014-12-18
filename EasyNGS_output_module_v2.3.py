@@ -131,6 +131,6 @@ fin = out.transpose()
 
 fin.to_csv('output_data.csv') #writes the data given above to "output_data" in csv format in the working directory
 
-if __name__ == "__main__":
+if __name__ == "__main__": #If the file is run as stand_alone then the auto testing module doctest will be initialized
     import doctest
     doctest.testmod()
