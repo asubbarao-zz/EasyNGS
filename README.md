@@ -1,5 +1,7 @@
 README
 
+The original repository including beta versions of the program is here: https://github.com/sjsumbt/Python_Project
+
 Please view as "raw" in github or save as .txt for proper formatting
 
 This is the README of the EasyNGS Project. This project provides a GUI and scripts which analyze NGS data files. The
